@@ -35,10 +35,14 @@ export const links: LinksFunction = () => [
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { getTheme } = await themeSessionResolver(request);
+  const platform = request.headers.get('user-agent');
 
+  const currDevice: 'desktop' | 'web' = platform?.includes('remix-electron')
+    ? 'desktop'
+    : 'web';
   return {
     theme: getTheme(),
-    isOnline: electron.net.isOnline()
+    isOnline: currDevice === 'web' ? true : electron?.net.isOnline()
   };
 }
 

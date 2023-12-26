@@ -7,10 +7,12 @@
   "sideEffects": false,
   "scripts": {
     "dev": "remix dev --command \"nodemon .\" --manual",
-    "build": "remix build && electron-builder",
-    "start": "electron ."
+    "build": "remix build",
+    "build:platform": "pnpm build && electron-builder",
+    "start": "electron .",
+    "start:web": "remix-serve ./build/index.js"
   },
-  "build": {
+  "build:platform": {
     "files": [
       "build",
       "desktop",
@@ -23,10 +25,12 @@
     "@nextui-org/react": "^2.2.9",
     "@remix-run/node": "^2.1.0",
     "@remix-run/react": "^2.1.0",
+    "@remix-run/serve": "^2.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "compression": "^1.7.4",
     "domain-functions": "^2.5.1",
+    "electron": "^27.0.2",
     "express": "^4.18.2",
     "framer-motion": "^10.16.16",
     "irsdk-node": "^3.3.0",
@@ -47,13 +51,12 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.0",
     "@remix-run/dev": "^2.1.0",
-    "@remix-run/serve": "^2.1.0",
     "@tailwindcss/typography": "^0.5.10",
     "@types/react": "^18.2.31",
     "@types/react-dom": "^18.2.14",
     "autoprefixer": "^10.4.16",
-    "electron": "^27.0.2",
     "electron-builder": "^24.6.4",
     "electron-devtools-installer": "^3.2.0",
     "nodemon": "^3.0.1",
