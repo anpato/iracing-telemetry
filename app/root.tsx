@@ -1,7 +1,8 @@
-import type {
-  LinksFunction,
-  LoaderFunctionArgs,
-  MetaFunction
+import {
+  json,
+  type LinksFunction,
+  type LoaderFunctionArgs,
+  type MetaFunction
 } from '@remix-run/node';
 import {
   Links,
@@ -11,7 +12,9 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
-  useNavigate
+  useNavigate,
+  useRevalidator,
+  useRouteError
 } from '@remix-run/react';
 import styles from '~/styles.css';
 import { NextUIProvider } from '@nextui-org/react';
@@ -25,7 +28,10 @@ import {
 } from 'remix-themes';
 import { ToastContainer } from 'react-toastify';
 import toastStyles from 'react-toastify/dist/ReactToastify.css';
-
+import { createBrowserClient } from '@supabase/auth-helpers-remix';
+import { useEffect, useState } from 'react';
+import { supabaseServer } from '~/utils/supabase.server';
+import * as Sentry from '@sentry/remix';
 export const meta: MetaFunction = () => [{ title: 'New Remix App' }];
 
 export const links: LinksFunction = () => [
@@ -33,17 +39,59 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: styles }
 ];
 
+Sentry.init({
+  dsn: 'https://5a20319e63be94cd9533a19e7349df95@o4505892775395328.ingest.sentry.io/4506466266906624',
+  tracesSampleRate: 1,
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1,
+  enabled: true
+});
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  console.error(error);
+  Sentry.captureRemixErrorBoundaryError(error);
+  return (
+    <html>
+      <head>
+        <title>Oh no!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <p>{JSON.stringify(error)}</p>
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const { getTheme } = await themeSessionResolver(request);
   const platform = request.headers.get('user-agent');
+  const env = {
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY
+  };
+
+  const { client, response } = supabaseServer(request);
+
+  const {
+    data: { session }
+  } = await client.auth.getSession();
 
   const currDevice: 'desktop' | 'web' = platform?.includes('remix-electron')
     ? 'desktop'
     : 'web';
-  return {
-    theme: getTheme(),
-    isOnline: currDevice === 'web' ? true : electron?.net.isOnline()
-  };
+  return json(
+    {
+      theme: getTheme(),
+      isOnline: currDevice === 'web' ? true : electron?.net.isOnline(),
+      env,
+      session
+    },
+    { headers: response.headers }
+  );
 }
 
 export default function Application() {
@@ -56,9 +104,36 @@ export default function Application() {
 }
 
 function App() {
-  const { isOnline, theme: storedTheme } = useLoaderData<typeof loader>();
+  const {
+    isOnline,
+    theme: storedTheme,
+    env,
+    session
+  } = useLoaderData<typeof loader>();
+
+  const [supabase] = useState(() =>
+    createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
+  );
+  const { revalidate } = useRevalidator();
   const [theme] = useTheme();
   const navigate = useNavigate();
+  const serverAccessToken = session?.access_token;
+
+  useEffect(() => {
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.access_token !== serverAccessToken) {
+        // server and client are out of sync.
+        revalidate();
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [serverAccessToken, supabase, revalidate]);
+
   return (
     <html lang="en" data-theme={theme ?? ''}>
       <head>
@@ -72,8 +147,8 @@ function App() {
       <body>
         <NextUIProvider navigate={navigate}>
           <SocketProvider isOnline={isOnline}>
-            <Outlet />
-            <ToastContainer />
+            <Outlet context={{ supabase }} />
+            <ToastContainer theme={theme ?? 'colored'} />
             <ScrollRestoration />
             <Scripts />
             <LiveReload />

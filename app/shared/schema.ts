@@ -21,3 +21,35 @@ export const SearchSchema: ZodSchema = {
 };
 
 export type SearchFormData = zod.infer<typeof SearchSchema.schema>;
+
+export const LoginSchema: ZodSchema = {
+  schema: zod.object({
+    email: zod
+      .string({
+        required_error: 'Email is required.'
+      })
+      .email(),
+    password: zod.string({ required_error: 'Password is required.' }).min(6)
+  }),
+  resolver() {
+    return zodResolver(this.schema);
+  }
+};
+export type LoginFormData = zod.infer<typeof LoginSchema.schema>;
+
+export const RegisterSchema: ZodSchema = {
+  schema: zod.object({
+    email: zod.string({ required_error: 'Email is required.' }).email(),
+    password: zod
+      .string({ required_error: 'Password is required.' })
+      .min(6, 'Password must contain atleast 6 characters.'),
+    confirmPassword: zod
+      .string({ required_error: 'Passwords much match.' })
+      .min(6, 'Password must contain atleast 6 characters.')
+  }),
+  resolver() {
+    return zodResolver(this.schema);
+  }
+};
+
+export type RegisterFormData = zod.infer<typeof RegisterSchema.schema>;

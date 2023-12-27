@@ -3,8 +3,8 @@ const { nextui } = require('@nextui-org/react');
 
 module.exports = {
   content: [
-    './app/**/*.{tsx,ts}',
-    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}'
+    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
+    './app/**/*.{tsx,ts}'
   ],
   theme: {
     extend: {
@@ -16,10 +16,5 @@ module.exports = {
     }
   },
   darkMode: 'class',
-  plugins: [
-    require('@tailwindcss/typography'),
-    nextui({
-      addCommonColors: true
-    })
-  ]
+  plugins: [require('@tailwindcss/typography'), nextui()]
 };

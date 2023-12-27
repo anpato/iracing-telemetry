@@ -40,8 +40,8 @@ export default function Navigation() {
           >
             <Tooltip
               content={`${
-                isConnected ? 'Connected' : 'Disconnected'
-              } to the iRacing telemetry server.`}
+                isConnected ? 'Connected to the' : 'Disconnected from the '
+              } telemetry server`}
             >
               <div>{isConnected ? <Activity /> : <Activity />}</div>
             </Tooltip>
