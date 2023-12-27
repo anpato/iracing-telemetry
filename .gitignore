@@ -5,3 +5,5 @@ public/build
 dist
 .env
 electron-builder.env
+sentry.properties
+.sentryclirc

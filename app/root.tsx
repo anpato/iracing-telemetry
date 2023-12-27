@@ -39,13 +39,15 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: styles }
 ];
 
-Sentry.init({
-  dsn: 'https://5a20319e63be94cd9533a19e7349df95@o4505892775395328.ingest.sentry.io/4506466266906624',
-  tracesSampleRate: 1,
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1,
-  enabled: true
-});
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: 'https://5a20319e63be94cd9533a19e7349df95@o4505892775395328.ingest.sentry.io/4506466266906624',
+    tracesSampleRate: 1,
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1,
+    enabled: true
+  });
+}
 
 export function ErrorBoundary() {
   const error = useRouteError();

@@ -1,5 +1,3 @@
-// sessions.server.tsx
-
 import { createCookieSessionStorage } from '@remix-run/node';
 import { createThemeSessionResolver } from 'remix-themes';
 

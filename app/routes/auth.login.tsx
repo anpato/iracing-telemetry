@@ -82,7 +82,7 @@ export default function Login() {
 
   return (
     <Form
-      className="flex gap-2 flex-col justify-center h-full"
+      className="flex gap-4 flex-col justify-center h-full"
       onSubmit={handleSubmit}
       method="POST"
     >

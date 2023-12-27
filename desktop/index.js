@@ -5,14 +5,21 @@ const Sentry = require('@sentry/electron');
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 /** @type {BrowserWindow | undefined} */
 let win;
-
-Sentry.init({
-  dsn: 'https://5a20319e63be94cd9533a19e7349df95@o4505892775395328.ingest.sentry.io/4506466266906624'
-});
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: 'https://5a20319e63be94cd9533a19e7349df95@o4505892775395328.ingest.sentry.io/4506466266906624'
+  });
+}
 
 /** @param {string} url */
 async function createWindow(url) {
-  win = new BrowserWindow({ show: false, height: 1200, width: 1200 });
+  win = new BrowserWindow({
+    show: false,
+    height: 1200,
+    width: 1200,
+    titleBarOverlay: false,
+    titleBarStyle: 'hidden'
+  });
   await win.loadURL(url);
   win.show();
 }
