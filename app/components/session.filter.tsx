@@ -1,14 +1,20 @@
 import { Input } from '@nextui-org/react';
 import { useFetcher } from '@remix-run/react';
-import { ChangeEvent, useRef } from 'react';
+import { ChangeEvent, FC, useEffect, useRef } from 'react';
 import { debounce } from '~/utils/debounce';
 import { useRemixForm } from 'remix-hook-form';
 import { SearchFormData, SearchSchema } from '~/shared/schema';
+import { TelemetrySession } from '~/shared/types';
+import { action } from '~/routes/session-search';
 
-const SessionFilter = () => {
+type IProps = {
+  setSessions: (values: TelemetrySession[]) => void;
+};
+
+const SessionFilter: FC<IProps> = ({ setSessions }) => {
   const ref = useRef<HTMLInputElement | null>(null);
 
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<typeof action>();
   const {
     formState: { errors },
     register
@@ -23,6 +29,12 @@ const SessionFilter = () => {
     }, 0.5);
   };
 
+  useEffect(() => {
+    if (fetcher.state === 'submitting') {
+      setSessions(fetcher?.data?.data ? [...fetcher.data?.data] : []);
+    }
+  }, [fetcher.data]);
+
   return (
     <div>
       <fetcher.Form method="post" action="/session-search">
@@ -35,8 +47,12 @@ const SessionFilter = () => {
           variant="bordered"
           description="Ex: Red bull ring, Bmw"
           isClearable
-          isInvalid={!!errors?.query}
-          errorMessage={errors?.query && (errors?.query?.message as string)}
+          isInvalid={!!errors?.query && ref.current?.value.length !== 0}
+          errorMessage={
+            errors?.query &&
+            (errors?.query?.message as string) &&
+            ref.current?.value.length
+          }
           type="text"
           name="query"
           label="Search sessions"

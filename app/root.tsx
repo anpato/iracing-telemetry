@@ -30,8 +30,10 @@ import { ToastContainer } from 'react-toastify';
 import toastStyles from 'react-toastify/dist/ReactToastify.css';
 import { createBrowserClient } from '@supabase/auth-helpers-remix';
 import { useEffect, useState } from 'react';
-import { supabaseServer } from '~/utils/supabase.server';
+import { getAuthorizedSession, supabaseServer } from '~/utils/supabase.server';
 import * as Sentry from '@sentry/remix';
+import { getPlatform } from '~/utils/get-platform';
+import { ElectronService } from '~/utils/electron.service';
 export const meta: MetaFunction = () => [{ title: 'New Remix App' }];
 
 export const links: LinksFunction = () => [
@@ -54,7 +56,7 @@ export function ErrorBoundary() {
   console.error(error);
   Sentry.captureRemixErrorBoundaryError(error);
   return (
-    <html>
+    <html suppressHydrationWarning>
       <head>
         <title>Oh no!</title>
         <Meta />
@@ -70,7 +72,7 @@ export function ErrorBoundary() {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { getTheme } = await themeSessionResolver(request);
-  const platform = request.headers.get('user-agent');
+  const platform = getPlatform();
   const env = {
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY
@@ -78,17 +80,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const { client, response } = supabaseServer(request);
 
-  const {
-    data: { session }
-  } = await client.auth.getSession();
+  const session = await getAuthorizedSession(client);
 
-  const currDevice: 'desktop' | 'web' = platform?.includes('remix-electron')
-    ? 'desktop'
-    : 'web';
   return json(
     {
       theme: getTheme(),
-      isOnline: currDevice === 'web' ? true : electron?.net.isOnline(),
+      isOnline: platform === 'web' ? true : electron?.net.isOnline(),
       env,
       session
     },

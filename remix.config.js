@@ -2,5 +2,16 @@
 module.exports = {
   tailwind: true,
   postcss: true,
-  serverModuleFormat: 'cjs'
+  serverModuleFormat: 'cjs',
+  serverDependenciesToBundle: [
+    /@floating-ui\/.+/,
+    /@mui\/.+/,
+    /@popperjs\/.+/,
+    /@react-spring\/.+/,
+    /clsx/,
+    /d3-.+/,
+    /internmap/,
+    /prop-types/,
+    /@babel\/.+/
+  ]
 };

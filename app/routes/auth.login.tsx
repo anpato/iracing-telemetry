@@ -9,7 +9,7 @@ import {
 import { useEffect, useState } from 'react';
 import { getValidatedFormData, useRemixForm } from 'remix-hook-form';
 import { LoginFormData, LoginSchema } from '~/shared/schema';
-import { supabaseServer } from '~/utils/supabase.server';
+import { setAuthorizedSession, supabaseServer } from '~/utils/supabase.server';
 import StatusCodes from 'http-status-codes';
 import { toast } from 'react-toastify';
 
@@ -34,14 +34,13 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   const {
-    data: { user },
+    data: { user, session },
     error
   } = await client.auth.signInWithPassword({
     email: data.email,
     password: data.password
   });
-
-  if (!user || error) {
+  if (!session || !user || error) {
     return json(
       {
         errors: {
@@ -51,7 +50,9 @@ export async function action({ request }: ActionFunctionArgs) {
       { status: StatusCodes.BAD_REQUEST, headers: response.headers }
     );
   }
-  return redirect('/dashboard');
+  await setAuthorizedSession(client, session);
+
+  return redirect('/dashboard', { headers: response.headers });
 }
 
 export default function Login() {

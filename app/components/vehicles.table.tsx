@@ -22,7 +22,7 @@ const VehicleTable: FC<IProps> = ({ mostUsedVehicles }) => {
         <TableColumn>Actions</TableColumn>
       </TableHeader>
       <TableBody emptyContent="No data available">
-        {mostUsedVehicles.map((vehicle) => (
+        {mostUsedVehicles?.map((vehicle) => (
           <TableRow key={vehicle.id}>
             <TableCell>
               <p className="font-medium">{vehicle.name}</p>

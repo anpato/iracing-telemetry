@@ -17,8 +17,7 @@ async function createWindow(url) {
     show: false,
     height: 1200,
     width: 1200,
-    titleBarOverlay: false,
-    titleBarStyle: 'hidden'
+    titleBarOverlay: false
   });
   await win.loadURL(url);
   win.show();

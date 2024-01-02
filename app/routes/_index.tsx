@@ -1,13 +1,11 @@
 import { LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { Outlet, useLoaderData } from '@remix-run/react';
-import { supabaseServer } from '~/utils/supabase.server';
+import { Outlet } from '@remix-run/react';
+import { getAuthorizedSession, supabaseServer } from '~/utils/supabase.server';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { client, response } = supabaseServer(request);
 
-  const {
-    data: { session }
-  } = await client.auth.getSession();
+  const session = await getAuthorizedSession(client);
 
   if (!session) {
     return redirect('/auth', { headers: response.headers });

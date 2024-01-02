@@ -41,7 +41,10 @@ export async function action({ request }: ActionFunctionArgs) {
     error
   } = await client.auth.signUp({
     email: data.email,
-    password: data.password
+    password: data.password,
+    options: {
+      emailRedirectTo: 'http://localhost:3000/auth/callback'
+    }
   });
 
   if (!user || error) {
@@ -138,7 +141,6 @@ export default function Register() {
         {...register('confirmPassword', {
           required: true,
           validate: (value: string) => {
-            console.log(value);
             if (value && watch('password') !== value) {
               return 'Your passwords do not match!';
             }
