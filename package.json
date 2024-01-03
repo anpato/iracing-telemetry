@@ -9,7 +9,7 @@
     "dev": "concurrently -n supabase,app,web \"pnpm dev:sb\" \"dotenv -e .env.local -- pnpm dev:app\" \"dotenv -e .env.local -- pnpm dev:web\"",
     "dev:app": "remix dev --command \"nodemon .\" --manual",
     "dev:web": "remix dev",
-    "seed:dev": "ts-node ./seeds/seed.ts",
+    "seed:dev": "ts-node -T ./seeds/seed.ts",
     "dev:sb": "supabase start",
     "build": "remix build",
     "build:platform": "pnpm build && electron-builder",

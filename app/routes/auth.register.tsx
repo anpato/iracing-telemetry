@@ -41,10 +41,7 @@ export async function action({ request }: ActionFunctionArgs) {
     error
   } = await client.auth.signUp({
     email: data.email,
-    password: data.password,
-    options: {
-      emailRedirectTo: 'http://localhost:3000/auth/callback'
-    }
+    password: data.password
   });
 
   if (!user || error) {

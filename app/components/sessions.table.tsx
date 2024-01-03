@@ -36,6 +36,7 @@ const SessionTable: FC<IProps<any>> = ({
       className: 'cursor-pointer'
     };
   }
+
   return (
     <Table {...tableProps}>
       <TableHeader>
@@ -73,11 +74,11 @@ const SessionTable: FC<IProps<any>> = ({
             </TableCell>
             <TableCell>
               <Code color="success">
-                {convertTime(session.metadata.ResultsPositions.FastestTime)}
+                {convertTime(session.metadata.ResultsFastestLap[0].FastestTime)}
               </Code>
             </TableCell>
             <TableCell>
-              <Code>{session.metadata.ResultsPositions.LapsComplete}</Code>
+              <Code>{session.metadata.ResultsPositions?.LapsComplete}</Code>
             </TableCell>
           </TableRow>
         ))}

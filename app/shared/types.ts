@@ -1,3 +1,4 @@
+import { TelemetryVarList } from '@irsdk-node/types';
 import { SupabaseClient } from '@supabase/auth-helpers-remix';
 import { Database } from '~/shared/db';
 
@@ -83,7 +84,11 @@ type SessionMetadata = {
   TrackNorthOffset: string;
   TrackSurfaceTemp: string;
   TrackWeatherType: string;
-  ResultsFastestLap: [];
+  ResultsFastestLap: {
+    CardIdx: number;
+    FastestLap: number;
+    FastestTime: number;
+  }[];
   TrackDynamicTrack: number;
   TrackPitSpeedLimit: string;
   TrackPrecipitation: string;
@@ -104,7 +109,15 @@ type SessionMetadata = {
 
 export type TelemetrySession = Omit<
   Database['public']['Tables']['sessions']['Row'],
-  'metdata'
+  'metadata'
 > & {
+  metadata: SessionMetadata;
   tracks?: Database['public']['Tables']['tracks']['Row'] | undefined;
-} & { metadata: SessionMetadata | undefined };
+};
+
+export type RaceSession = TelemetrySession & {
+  telemetry: Database['public']['Tables']['telemetry']['Row'] &
+    {
+      data: TelemetryVarList[];
+    }[];
+};

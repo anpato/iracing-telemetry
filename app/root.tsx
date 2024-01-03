@@ -9,6 +9,7 @@ import {
   LiveReload,
   Meta,
   Outlet,
+  redirect,
   Scripts,
   ScrollRestoration,
   useLoaderData,
@@ -34,6 +35,7 @@ import { getAuthorizedSession, supabaseServer } from '~/utils/supabase.server';
 import * as Sentry from '@sentry/remix';
 import { getPlatform } from '~/utils/get-platform';
 import { ElectronService } from '~/utils/electron.service';
+import { StatusCodes } from 'http-status-codes';
 export const meta: MetaFunction = () => [{ title: 'New Remix App' }];
 
 export const links: LinksFunction = () => [
@@ -53,8 +55,16 @@ if (process.env.NODE_ENV === 'production') {
 
 export function ErrorBoundary() {
   const error = useRouteError();
+  const navigate = useNavigate();
   console.error(error);
   Sentry.captureRemixErrorBoundaryError(error);
+
+  useEffect(() => {
+    if (error.status === 401) {
+      return navigate('/');
+    }
+  }, []);
+
   return (
     <html suppressHydrationWarning>
       <head>
@@ -73,6 +83,7 @@ export function ErrorBoundary() {
 export async function loader({ request }: LoaderFunctionArgs) {
   const { getTheme } = await themeSessionResolver(request);
   const platform = getPlatform();
+  console.log(process.env);
   const env = {
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY
@@ -81,7 +92,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { client, response } = supabaseServer(request);
 
   const session = await getAuthorizedSession(client);
-
+  // if (!session) {
+  //   return redirect('/', { status: StatusCodes.UNAUTHORIZED });
+  // }
   return json(
     {
       theme: getTheme(),

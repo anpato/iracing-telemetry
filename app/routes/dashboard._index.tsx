@@ -28,7 +28,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     .eq('user_id', session?.user?.id)
     .limit(10)
     .order('created_at', { ascending: false });
-  console.log(data, error);
+  console.log('sessions', data, error);
   return json(
     {
       sessions: data,

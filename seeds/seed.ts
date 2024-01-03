@@ -35,11 +35,11 @@ const api = axios.create({
   baseURL: 'https://members-ng.iracing.com'
 });
 
-const USER__ID = '8318470d-88c0-478b-bff3-d6f337b3088b';
+const USER__ID = 'b643c87c-02cb-47a3-9819-e413c389afff';
 
 const supabase = createBrowserClient<Database>(
   process.env.SUPABASE_URL as string,
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 type SbSession = {
@@ -137,14 +137,14 @@ async function run() {
 
   let { data: track } = await supabase
     .from('tracks')
-    .select()
+    .select('*')
     .eq('irTrackId', dataCollections.track?.irTrackId as number)
     .single();
   if (!track) {
     let { data: trackCreated } = await supabase
       .from('tracks')
       .insert({ ...(dataCollections.track as Track) })
-      .select()
+      .select('*')
       .single();
     if (trackCreated) {
       track = trackCreated;
@@ -156,7 +156,7 @@ async function run() {
       ...(dataCollections.session as SbSession),
       track_id: track?.id ?? ''
     })
-    .select()
+    .select('*')
     .single();
 
   const { data: telemetry, error } = await supabase.from('telemetry').insert({
