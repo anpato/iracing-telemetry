@@ -14,32 +14,28 @@ export async function action({ request }: ActionFunctionArgs) {
   if (errors) {
     return json(
       {
+        data: [],
         errors,
         receivedValues
       },
       { headers: response.headers }
     );
   }
-
-  const { data: results } = await client
-    .from('sessions')
-    .select('*, tracks(*)')
-    .ilike('tracks.trackName', data.query);
-  console.log(results);
   const { data: tracks } = await client
     .from('tracks')
     .select()
-    .in('id', results?.map((r) => r.track_id) ?? []);
-  // TODO: Return search results
-  if (tracks?.length) {
-    return json({
-      data: results?.map((r) => ({
-        ...r,
-        tracks: tracks.find((t) => t.id === r.track_id)
-      }))
-    });
-  }
+    .ilike('trackName', `%${data.query}%`);
+
+  const { data: results, error } = await client
+    .from('sessions')
+    .select(`*, tracks(*)`)
+    .or(
+      `track_id.in.(${tracks
+        ?.map((t) => t.id)
+        .join(',')}), metadata->carInfo->>name.ilike.%${data.query}%`
+    );
+
   return json({
-    data: []
+    data: results ?? []
   });
 }

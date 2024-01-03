@@ -121,3 +121,7 @@ export type RaceSession = TelemetrySession & {
       data: TelemetryVarList[];
     }[];
 };
+
+export type CarList = TelemetrySession['metadata']['carInfo'] & {
+  count: number;
+};

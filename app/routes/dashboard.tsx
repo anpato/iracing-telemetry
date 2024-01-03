@@ -8,7 +8,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { client, response } = supabaseServer(request);
   const session = await getAuthorizedSession(client);
   if (!session) {
-    console.log('Hello');
     await client.auth.signOut();
     throw redirect('/', {
       headers: response.headers,

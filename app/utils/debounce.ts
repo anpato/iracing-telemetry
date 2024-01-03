@@ -9,4 +9,5 @@ export const debounce = (func: () => void, delay: number = 2) => {
   }
 
   timeout = setTimeout(func, delay * 1000);
+  return timeout;
 };

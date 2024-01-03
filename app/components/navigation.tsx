@@ -26,7 +26,7 @@ export default function Navigation() {
         <NavbarItem>
           <Badge content="Coming soon!" color="warning">
             <Link isDisabled href="/dashboard/telemetry">
-              Telemetry
+              Live Telemetry
             </Link>
           </Badge>
         </NavbarItem>

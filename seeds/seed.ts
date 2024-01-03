@@ -20,9 +20,7 @@ type IrSdk = {
 };
 
 const createPwHash = () => {
-  var hash = CryptoJS.SHA256(
-    '50Acf5b1/Subiefest13' + 'anpato1994@gmail.com'.toLowerCase()
-  );
+  var hash = CryptoJS.SHA256('Password' + 'email'.toLowerCase());
   // The values in parenthesis evaluate to ("MyPassWord"+"clunky@iracing.com")
   // Notice the password value maintains its case, while the lowercase username is used here
 

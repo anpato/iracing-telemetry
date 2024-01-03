@@ -8,13 +8,16 @@ import {
   TableHeader,
   TableRow
 } from '@nextui-org/react';
+import { useLocation } from '@remix-run/react';
 import { FC } from 'react';
+import { CarList } from '~/shared/types';
 
 type IProps = {
-  mostUsedVehicles: any[];
+  mostUsedVehicles: CarList[];
 };
 
 const VehicleTable: FC<IProps> = ({ mostUsedVehicles }) => {
+  const location = useLocation();
   return (
     <Table shadow="none">
       <TableHeader>
@@ -30,8 +33,7 @@ const VehicleTable: FC<IProps> = ({ mostUsedVehicles }) => {
             <TableCell>
               <Link
                 showAnchorIcon
-                isDisabled
-                href={`/sessions/vehicles/${vehicle.id}`}
+                href={`${location.pathname}?car=${vehicle.id}`}
               >
                 View Sessions
               </Link>

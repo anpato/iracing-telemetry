@@ -31,7 +31,7 @@ export const setAuthorizedSession = async (
 ) => {
   const platform = getPlatform();
   const ses = await client.auth.setSession(session);
-  console.log(ses);
+
   if (platform === 'desktop') {
     return ElectronService?.setSession(session);
   }
@@ -43,7 +43,7 @@ export const getAuthorizedSession = async (
   client: SupabaseClient<Database>
 ): Promise<Session | null> => {
   const platform = getPlatform();
-  console.log(platform);
+
   switch (platform) {
     case 'desktop':
       return ElectronService?.getSession() ?? null;
@@ -52,8 +52,7 @@ export const getAuthorizedSession = async (
         data: { session },
         error
       } = await client.auth.getSession();
-      console.log('Auth', session, error);
-      // console.log()
+
       if (!session) {
         await client.auth.signOut();
         return null;

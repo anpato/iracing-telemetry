@@ -83,7 +83,7 @@ export function ErrorBoundary() {
 export async function loader({ request }: LoaderFunctionArgs) {
   const { getTheme } = await themeSessionResolver(request);
   const platform = getPlatform();
-  console.log(process.env);
+
   const env = {
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY
