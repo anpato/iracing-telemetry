@@ -39,7 +39,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   );
 };
 
-type varListKeys = keyof TelemetryVarList;
+export type varListKeys = keyof TelemetryVarList;
 const calculateSums = (
   tel: TelemetryVarList,
   keys: varListKeys[]

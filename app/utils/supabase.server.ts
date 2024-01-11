@@ -12,15 +12,17 @@ export const supabaseServer = (
   request: Request,
   response: Response = new Response()
 ): { client: SupabaseClient<Database>; response: Response } => {
+  const client = createServerClient<Database>(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY,
+    {
+      request,
+      response
+    }
+  );
+
   return {
-    client: createServerClient<Database>(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_ANON_KEY,
-      {
-        request,
-        response
-      }
-    ),
+    client,
     response
   };
 };
@@ -45,8 +47,8 @@ export const getAuthorizedSession = async (
   const platform = getPlatform();
 
   switch (platform) {
-    case 'desktop':
-      return ElectronService?.getSession() ?? null;
+    // case 'desktop':
+    //   return (await ElectronService?.getSession()) ?? null;
     default:
       const {
         data: { session },
@@ -59,4 +61,8 @@ export const getAuthorizedSession = async (
       }
       return session;
   }
+};
+
+export const clearSession = async (client: SupabaseClient<Database>) => {
+  return await client.auth.signOut();
 };

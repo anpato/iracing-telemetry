@@ -19,24 +19,43 @@ class ElectronStore {
   private electron = require('electron');
   private path: string;
   private data: Record<'session', Session | null>;
+  private name: string = `${process.env.SUPABASE_PROJECT}-auth-token`;
   constructor() {
     const userPath = this.electron.app.getPath('userData');
+    this.partition = this.electron.session.fromPartition('persist:session');
     this.path = path.join(userPath, 'session.json');
     this.data = parseDataFile(this.path);
   }
 
-  setSession(session: Session) {
-    this.data['session'] = session;
-    this.storeSessionInFile(session);
+  async setSession(session: Session) {
+    // console.log(this.electron.app.getAppPath());
+    await this.electron.session.defaultSession.cookies.set({
+      path: '/',
+      sameSite: 'lax',
+      url: 'http://www.test.com',
+      domain: 'test.com',
+      expirationDate: session.expires_at,
+      name: this.name,
+      value: encodeURIComponent(
+        [
+          session.access_token,
+          session.refresh_token,
+          null,
+          null,
+          null
+        ].toString()
+      )
+    });
+    return session;
+    // this.storeSessionInFile(session);
   }
 
   getSession(): Session | null {
-    return this.data.session;
+    return null;
   }
 
   clearSession() {
-    // fs.rmSync(this.path);
-    this.data.session = null;
+    this.electron.session.defaultSession.cookies.remove('/', this.name);
   }
 
   private storeSessionInFile(data: Session) {

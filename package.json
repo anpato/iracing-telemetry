@@ -6,7 +6,7 @@
   "main": "desktop/index.js",
   "sideEffects": false,
   "scripts": {
-    "dev": "concurrently -n supabase,app,web \"pnpm dev:sb\" \"dotenv -e .env.local -- pnpm dev:app\" \"dotenv -e .env.local -- pnpm dev:web\"",
+    "dev": "concurrently -n app,web \"dotenv -e .env.local -- pnpm dev:app\" \"dotenv -e .env.local -- pnpm dev:web\"",
     "dev:app": "remix dev --command \"nodemon .\" --manual",
     "dev:web": "remix dev",
     "seed:dev": "ts-node -T ./seeds/seed.ts",
@@ -20,7 +20,6 @@
     "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^3.3.2",
     "@irsdk-node/types": "^3.0.0",
-    "@mui/x-charts": "^6.18.4",
     "@nextui-org/react": "^2.2.9",
     "@remix-run/node": "^2.1.0",
     "@remix-run/react": "^2.1.0",

@@ -9,7 +9,6 @@ import {
   LiveReload,
   Meta,
   Outlet,
-  redirect,
   Scripts,
   ScrollRestoration,
   useLoaderData,
@@ -34,8 +33,6 @@ import { useEffect, useState } from 'react';
 import { getAuthorizedSession, supabaseServer } from '~/utils/supabase.server';
 import * as Sentry from '@sentry/remix';
 import { getPlatform } from '~/utils/get-platform';
-import { ElectronService } from '~/utils/electron.service';
-import { StatusCodes } from 'http-status-codes';
 export const meta: MetaFunction = () => [{ title: 'New Remix App' }];
 
 export const links: LinksFunction = () => [
@@ -92,9 +89,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { client, response } = supabaseServer(request);
 
   const session = await getAuthorizedSession(client);
-  // if (!session) {
-  //   return redirect('/', { status: StatusCodes.UNAUTHORIZED });
-  // }
+
   return json(
     {
       theme: getTheme(),

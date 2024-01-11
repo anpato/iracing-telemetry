@@ -10,7 +10,7 @@ import {
 import { useContext } from 'react';
 import { SocketContext } from '~/store/socket.context';
 
-import { Activity, Moon, Sun } from 'react-feather';
+import { Activity, LogOut, Moon, Sun } from 'react-feather';
 import { Theme, useTheme } from 'remix-themes';
 
 export default function Navigation() {
@@ -25,9 +25,7 @@ export default function Navigation() {
         </NavbarItem>
         <NavbarItem>
           <Badge content="Coming soon!" color="warning">
-            <Link isDisabled href="/dashboard/telemetry">
-              Live Telemetry
-            </Link>
+            <Link href="/dashboard/telemetry">Live Telemetry</Link>
           </Badge>
         </NavbarItem>
       </NavbarContent>
@@ -56,6 +54,11 @@ export default function Navigation() {
             startContent={<Sun />}
             endContent={<Moon />}
           />
+        </NavbarItem>
+        <NavbarItem>
+          <Link href="/auth/logout">
+            <LogOut />
+          </Link>
         </NavbarItem>
       </NavbarContent>
     </Navbar>

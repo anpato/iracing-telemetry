@@ -20,18 +20,18 @@ const SocketProvider: FC<{ children: ReactNode; isOnline: boolean }> = ({
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setConnected] = useState<boolean>(isOnline);
   useEffect(() => {
-    if (isOnline) {
-      const socket = io('http://127.0.0.1:4210', {
-        reconnectionDelay: 1000,
-        reconnection: true,
-        reconnectionAttempts: 2,
-        transports: ['websocket'],
-        agent: false,
-        upgrade: false,
-        rejectUnauthorized: false
-      });
-      setSocket(socket);
-    }
+    // if (isOnline) {
+    const socket = io('https://a67f-70-21-167-86.ngrok-free.app/', {
+      reconnectionDelay: 1000,
+      reconnection: true,
+      reconnectionAttempts: 2,
+      transports: ['websocket'],
+      agent: false,
+      upgrade: false,
+      rejectUnauthorized: false
+    });
+    setSocket(socket);
+    // }
 
     return () => {
       socket?.close();
@@ -42,6 +42,14 @@ const SocketProvider: FC<{ children: ReactNode; isOnline: boolean }> = ({
     if (!socket) return;
     socket.on('confirmation', (data) => {
       setConnected(data);
+    });
+    // socket?.on('session', (data) => {
+    //   console.log(data);
+    //   // setSession()
+    // });
+    socket?.on('telemetry', (data) => {
+      console.log('Telemetr', data);
+      // setSession()
     });
   }, [socket]);
 

@@ -2,5 +2,11 @@
 module.exports = {
   tailwind: true,
   postcss: true,
-  serverModuleFormat: 'cjs'
+  serverModuleFormat: 'cjs',
+  browserNodeBuiltinsPolyfill: {
+    modules: {
+      path: true,
+      fs: true
+    }
+  }
 };

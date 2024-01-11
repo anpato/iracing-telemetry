@@ -1,5 +1,10 @@
+import electron from '~/electron.server';
 import { Platform } from '~/shared/types';
 
 export const getPlatform = (): Platform => {
-  return process.versions['electron'] ? 'desktop' : 'web';
+  try {
+    return electron.app.getName() ? 'desktop' : 'web';
+  } catch (error) {
+    return 'web';
+  }
 };
